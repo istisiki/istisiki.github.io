@@ -1,0 +1,46 @@
+---
+import Layout from "@/src/layouts/Layout.astro";
+import Header from "@/src/components/Header.astro";
+import Footer from "@/src/components/Footer.astro";
+
+const nav = [
+  { path: "/", text: "about" },
+];
+
+const footer = {
+  status: "Say hi",
+  email: { label: "Email", url: "mailto:hello@istisiki.me" },
+  github: { label: "GitHub", url: "https://github.com/istisiki" },
+  linkedin: { label: "LinkedIn", url: "https://www.linkedin.com/in/staceycardoso" },
+};
+---
+
+<Layout
+  title="Stacey Cardoso"
+  description="Personal site of Stacey Cardoso."
+>
+  <Header nav={nav} />
+
+  <main>
+    <section class="mt-40 md:mt-48">
+      <h1 class="text-2xl mb-6">Stacey Cardoso</h1>
+
+      <p class="mb-6">
+        I'm a software engineer living in Cebu, Philippines. I am a serial start-up 
+        engineer and love the challenge of building something from the ground up.
+      </p>
+
+      <p class="mb-6">
+        Currently, I am working on applying AI to construction project management 
+        in Mastt.
+      </p>
+
+      <p class="mb-6">
+        Outside of work, I busy myself with playing music, training my cats to
+        beat dogs at doing tricks, and making tasty coffee.
+      </p>
+    </section>
+  </main>
+
+  <Footer {...footer} />
+</Layout>

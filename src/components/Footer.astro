@@ -1,0 +1,57 @@
+---
+interface SocialLink {
+    label: string;
+    url: string;
+}
+
+interface Props {
+    status: string;
+    id?: string;
+    email?: SocialLink;
+    github?: SocialLink;
+    x?: SocialLink;
+    linkedin?: SocialLink;
+}
+
+const { status, id, email, github, x, linkedin } = Astro.props as Props;
+---
+
+<footer
+    id={id}
+    class="my-24 border-t pt-8 text-sm grid grid-cols-1 gap-3 place-items-center"
+>
+    <div>
+        <span
+            class="inline-block w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"
+        ></span>
+        <span class="opacity-70 uppercase">{status}</span>
+        <span
+            class="inline-block w-2 h-2 rounded-full bg-green-500 ml-2 animate-pulse"
+        ></span>
+    </div>
+    <div class="flex gap-4 [&_a]:opacity-70 [&_a]:hover:opacity-100 [&_a]:transition-colors [&_a]:duration-200">
+        {email && (
+            <a href={email.url}>
+                {email.label}
+            </a>
+        )}
+
+        {github && (
+            <a href={github.url} rel="nofollow">
+                {github.label}
+            </a>
+        )}
+
+        {x && (
+            <a href={x.url} rel="nofollow">
+                {x.label}
+            </a>
+        )}
+
+        {linkedin && (
+            <a href={linkedin.url} rel="nofollow">
+                {linkedin.label}
+            </a>
+        )}
+    </div>
+</footer>
