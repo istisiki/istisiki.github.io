@@ -2,10 +2,7 @@
 import Layout from "@/src/layouts/Layout.astro";
 import Header from "@/src/components/Header.astro";
 import Footer from "@/src/components/Footer.astro";
-
-const nav = [
-  { path: "/", text: "about" },
-];
+import { siteNav } from "@/src/siteNav";
 
 const footer = {
   status: "Say hi",
@@ -19,7 +16,7 @@ const footer = {
   title="Stacey Cardoso"
   description="Personal site of Stacey Cardoso."
 >
-  <Header nav={nav} />
+  <Header nav={siteNav} />
 
   <main>
     <section class="mt-40 md:mt-48">
