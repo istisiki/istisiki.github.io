@@ -7,45 +7,55 @@ import { siteNav } from "@/src/siteNav";
 import postcard from "@/src/assets/dreamer-100-postcard.png";
 
 const PUBLISHED_ON = "2026-11-19";
-const FLIGHT_100_ON = "2026-11-19";
-const FLIGHT_100 = { flightNumber: "5J 484", from: "Bacolod", to: "Manila" };
+const PASSENGER_FLIGHTS = 54;
+const MILESTONE_FLIGHT_ON = "2026-11-19";
+const MILESTONE_FLIGHT = { flightNumber: "5J 484", from: "Bacolod", to: "Manila" };
 const AIRPORTS = { inThePhilippines: 10, abroad: 2 };
-const KM_IN_THE_AIR = 37_200;
-const POSTCARD_ALT_TEXT =
-  "Fan-made postcard. The Dreamer has flown 54 passenger flights to 12 airports, about 37,200 km, and flew ~10,500 dreamers (est.). Delivery flights not counted. Plane art by Happy Garaje. dreamer.istisiki.me";
+const AIRPORT_TO_AIRPORT_DISTANCE = { km: 37_219.800699083076, isLowerBound: false };
 
-const PASSENGER_FLIGHTS = 100;
 const FIRST_PASSENGER_DAY = "2026-11-11";
 const SEATS_ON_THE_A321NEO = 236;
 const LOAD_FACTOR_JAN_TO_OCT_2026 = 0.823;
 const DREAMERS_ROUNDED_TO = 100;
+const KM_ROUNDED_TO = 100;
 const EQUATOR_KM = 40_075;
 const MS_PER_DAY = 86_400_000;
-const SHARE_IMAGE_ALT_ENDS_BEFORE = " Delivery flights not counted.";
+const PLANE_ARTISTS = "Happy Garaje";
 const SHARE_IMAGE_SIZE = { width: 1080, height: 567 };
 
-const TRACKER_URL = "https://dreamer.istisiki.me/";
+const TRACKER_ADDRESS = "dreamer.istisiki.me";
+const TRACKER_URL = `https://${TRACKER_ADDRESS}/`;
 const HAPPY_GARAJE_URL = "https://happygaraje.com";
 const ADSB_LOL_URL = "https://adsb.lol";
 const ODBL_URL = "https://opendatacommons.org/licenses/odbl/";
 const DREAMER_EMAIL = "dreamer@istisiki.me";
 
+const DAY_AND_MONTH: Intl.DateTimeFormatOptions = { day: "numeric", month: "short" };
+const DAY_MONTH_AND_YEAR: Intl.DateTimeFormatOptions = { ...DAY_AND_MONTH, year: "numeric" };
+const ORDINAL_SUFFIXES: Record<Intl.LDMLPluralRule, string> = { zero: "th", one: "st", two: "nd", few: "rd", many: "th", other: "th" };
+
 const formatCount = (count: number) => count.toLocaleString("en-US");
-const dayAndMonth = (dayKey: string) =>
-  new Date(dayKey).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
-const dayMonthAndYear = (dayKey: string) =>
-  new Date(dayKey).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+const formatDay = (dayKey: string, options: Intl.DateTimeFormatOptions) =>
+  new Date(dayKey).toLocaleDateString("en-GB", { ...options, timeZone: "UTC" });
+const ordinal = (count: number) => `${count}${ORDINAL_SUFFIXES[new Intl.PluralRules("en-US", { type: "ordinal" }).select(count)]}`;
 
+const flightOrdinal = ordinal(PASSENGER_FLIGHTS);
 const airports = AIRPORTS.inThePhilippines + AIRPORTS.abroad;
-const timesAroundTheEarth = (KM_IN_THE_AIR / EQUATOR_KM).toFixed(1);
-const daysToFlight100 = (Date.parse(FLIGHT_100_ON) - Date.parse(FIRST_PASSENGER_DAY)) / MS_PER_DAY + 1;
+const roundKm = AIRPORT_TO_AIRPORT_DISTANCE.isLowerBound ? Math.floor : Math.round;
+const kilometres = formatCount(roundKm(AIRPORT_TO_AIRPORT_DISTANCE.km / KM_ROUNDED_TO) * KM_ROUNDED_TO);
+const distanceWord = AIRPORT_TO_AIRPORT_DISTANCE.isLowerBound ? "at least" : "about";
+const timesAroundTheEarth = (AIRPORT_TO_AIRPORT_DISTANCE.km / EQUATOR_KM).toFixed(1);
+const daysToMilestone = (Date.parse(MILESTONE_FLIGHT_ON) - Date.parse(FIRST_PASSENGER_DAY)) / MS_PER_DAY + 1;
 const loadFactorPercent = (LOAD_FACTOR_JAN_TO_OCT_2026 * 100).toFixed(1);
-const estimatedDreamers =
-  Math.round((PASSENGER_FLIGHTS * SEATS_ON_THE_A321NEO * LOAD_FACTOR_JAN_TO_OCT_2026) / DREAMERS_ROUNDED_TO) * DREAMERS_ROUNDED_TO;
-const [shareImageAltText] = POSTCARD_ALT_TEXT.split(SHARE_IMAGE_ALT_ENDS_BEFORE);
+const estimatedDreamers = formatCount(
+  Math.round((PASSENGER_FLIGHTS * SEATS_ON_THE_A321NEO * LOAD_FACTOR_JAN_TO_OCT_2026) / DREAMERS_ROUNDED_TO) * DREAMERS_ROUNDED_TO,
+);
 
-const title = "The Dreamer Plane just flew its 100th passenger flight";
-const description = `A fan-made postcard for the Dreamer Plane's 100th passenger flight: ${airports} airports, about ${formatCount(KM_IN_THE_AIR)} km and ~${formatCount(estimatedDreamers)} dreamers in ${daysToFlight100} days. Plane art by Happy Garaje.`;
+const postcardAltText = `Fan-made postcard. The Dreamer has flown ${formatCount(PASSENGER_FLIGHTS)} passenger flights to ${airports} airports, ${distanceWord} ${kilometres} km, and flew ~${estimatedDreamers} dreamers (est.). Delivery flights not counted. Plane art by ${PLANE_ARTISTS}. ${TRACKER_ADDRESS}`;
+const shareImageAltText = `Fan-made postcard. The Dreamer has flown ${formatCount(PASSENGER_FLIGHTS)} flights. Plane art by ${PLANE_ARTISTS}.`;
+
+const title = `The Dreamer Plane just flew its ${flightOrdinal} passenger flight`;
+const description = `A fan-made postcard for the Dreamer Plane's ${flightOrdinal} passenger flight: ${airports} airports, ${distanceWord} ${kilometres} km and ~${estimatedDreamers} dreamers in ${daysToMilestone} days. Plane art by ${PLANE_ARTISTS}.`;
 
 const shareImage = await getImage({ src: postcard, ...SHARE_IMAGE_SIZE, fit: "cover", position: "top", format: "png" });
 
@@ -66,21 +76,24 @@ const sectionHeadingClass = "text-xl mt-12 mb-4";
     <article class="mt-40 md:mt-48">
       <h1 class="text-2xl mb-2">{title}</h1>
 
-      <p class="mb-6 opacity-70 text-sm">
-        <time datetime={PUBLISHED_ON}>{dayMonthAndYear(PUBLISHED_ON)}</time> · by istisiki
+      <p class="mb-2 opacity-70 text-sm">
+        <time datetime={PUBLISHED_ON}>{formatDay(PUBLISHED_ON, DAY_MONTH_AND_YEAR)}</time> · by istisiki
       </p>
 
-      <Image src={postcard} alt={POSTCARD_ALT_TEXT} loading="eager" class="w-full h-auto mb-8" />
+      <p class="mb-6 opacity-70">Fan-made. Not affiliated with Happy Garaje or Cebu Pacific.</p>
+
+      <Image src={postcard} alt={postcardAltText} loading="eager" fetchpriority="high" class="w-full h-auto mb-8" />
 
       <p class="mb-6">
-        Cebu Pacific's Dreamer Plane flew its {PASSENGER_FLIGHTS}th passenger flight on {dayAndMonth(FLIGHT_100_ON)}:
-        {FLIGHT_100.flightNumber} from {FLIGHT_100.from} to {FLIGHT_100.to}.
+        Cebu Pacific's Dreamer Plane flew its {flightOrdinal} passenger flight on {formatDay(MILESTONE_FLIGHT_ON, DAY_AND_MONTH)}:
+        {MILESTONE_FLIGHT.flightNumber} from {MILESTONE_FLIGHT.from} to {MILESTONE_FLIGHT.to}.
       </p>
 
       <p class="mb-6">
         If you haven't met it yet, the Dreamer Plane is the A321neo that wears Cebu Pacific's 30th-anniversary
-        livery, with art by Happy Garaje, an art studio from right here in Cebu. It started carrying passengers on
-        {dayAndMonth(FIRST_PASSENGER_DAY)}, so that's {PASSENGER_FLIGHTS} flights in {daysToFlight100} days. Busy plane!
+        livery, with art by Happy Garaje, an artist duo from right here in Cebu. It started carrying passengers on
+        {formatDay(FIRST_PASSENGER_DAY, DAY_AND_MONTH)}, so that's {PASSENGER_FLIGHTS} flights in {daysToMilestone} days. Busy
+        plane!
       </p>
 
       <p class="mb-6">I'm a fan, so I made it a postcard.</p>
@@ -90,15 +103,15 @@ const sectionHeadingClass = "text-xl mt-12 mb-4";
       <ul class="mb-6 list-disc pl-6">
         <li>{PASSENGER_FLIGHTS} passenger flights (the delivery flights don't count)</li>
         <li>{airports} airports: {AIRPORTS.inThePhilippines} in the Philippines, {AIRPORTS.abroad} abroad</li>
-        <li>about {formatCount(KM_IN_THE_AIR)} km in the air, which is ~{timesAroundTheEarth} times around the Earth</li>
-        <li>~{formatCount(estimatedDreamers)} dreamers flown (that one is an estimate, more on it below)</li>
+        <li>{distanceWord} {kilometres} km in the air, which is ~{timesAroundTheEarth} times around the Earth</li>
+        <li>~{estimatedDreamers} dreamers flown (that one is an estimate, more on it below)</li>
       </ul>
 
       <h2 class={sectionHeadingClass}>Where the numbers come from</h2>
 
       <p class="mb-6">
         I built a small tracker that follows this one plane:
-        <a href={TRACKER_URL} class={linkClass}>dreamer.istisiki.me</a>. It shows where the Dreamer is right now, the
+        <a href={TRACKER_URL} class={linkClass}>{TRACKER_ADDRESS}</a>. It shows where the Dreamer is right now, the
         flight it's on, and every flight it has flown so far. The postcard is drawn from the tracker's own flight list.
       </p>
 
@@ -107,11 +120,11 @@ const sectionHeadingClass = "text-xl mt-12 mb-4";
       <ul class="mb-6 list-disc pl-6">
         <li>
           The {PASSENGER_FLIGHTS} is the tracker's count. Flight-tracking coverage over the Philippines has holes, so the
-          tracker misses a flight now and then. The real {PASSENGER_FLIGHTS}th could be a flight or two earlier.
+          tracker misses a flight now and then. The real {flightOrdinal} could be a flight or two earlier.
         </li>
         <li>The kilometres are airport to airport, not the exact path the plane flew.</li>
         <li>
-          "Dreamers" is a rough estimate, not a headcount. It's {PASSENGER_FLIGHTS} flights x {SEATS_ON_THE_A321NEO} seats x
+          "Dreamers" is a rough estimate, not a headcount. It's {PASSENGER_FLIGHTS} flights × {SEATS_ON_THE_A321NEO} seats ×
           {loadFactorPercent}%, which is Cebu Pacific's average load factor for January to October 2026 (as reported by
           InsiderPH). Nobody gave me passenger numbers, and if you flew twice, you count twice.
         </li>
@@ -147,8 +160,6 @@ const sectionHeadingClass = "text-xl mt-12 mb-4";
           (<a href={ODBL_URL} class={linkClass}>ODbL</a>).
         </li>
       </ul>
-
-      <p class="mb-6 opacity-70 text-sm">Fan-made. Not affiliated with Happy Garaje or Cebu Pacific.</p>
     </article>
   </main>
 
