@@ -1,0 +1,156 @@
+---
+import { Image, getImage } from "astro:assets";
+import Layout from "@/src/layouts/Layout.astro";
+import Header from "@/src/components/Header.astro";
+import Footer from "@/src/components/Footer.astro";
+import { siteNav } from "@/src/siteNav";
+import postcard from "@/src/assets/dreamer-100-postcard.png";
+
+const PUBLISHED_ON = "2026-11-19";
+const FLIGHT_100_ON = "2026-11-19";
+const FLIGHT_100 = { flightNumber: "5J 484", from: "Bacolod", to: "Manila" };
+const AIRPORTS = { inThePhilippines: 10, abroad: 2 };
+const KM_IN_THE_AIR = 37_200;
+const POSTCARD_ALT_TEXT =
+  "Fan-made postcard. The Dreamer has flown 54 passenger flights to 12 airports, about 37,200 km, and flew ~10,500 dreamers (est.). Delivery flights not counted. Plane art by Happy Garaje. dreamer.istisiki.me";
+
+const PASSENGER_FLIGHTS = 100;
+const FIRST_PASSENGER_DAY = "2026-11-11";
+const SEATS_ON_THE_A321NEO = 236;
+const LOAD_FACTOR_JAN_TO_OCT_2026 = 0.823;
+const DREAMERS_ROUNDED_TO = 100;
+const EQUATOR_KM = 40_075;
+const MS_PER_DAY = 86_400_000;
+const SHARE_IMAGE_ALT_ENDS_BEFORE = " Delivery flights not counted.";
+const SHARE_IMAGE_SIZE = { width: 1080, height: 567 };
+
+const TRACKER_URL = "https://dreamer.istisiki.me/";
+const HAPPY_GARAJE_URL = "https://happygaraje.com";
+const ADSB_LOL_URL = "https://adsb.lol";
+const ODBL_URL = "https://opendatacommons.org/licenses/odbl/";
+const DREAMER_EMAIL = "dreamer@istisiki.me";
+
+const formatCount = (count: number) => count.toLocaleString("en-US");
+const dayAndMonth = (dayKey: string) =>
+  new Date(dayKey).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
+const dayMonthAndYear = (dayKey: string) =>
+  new Date(dayKey).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+
+const airports = AIRPORTS.inThePhilippines + AIRPORTS.abroad;
+const timesAroundTheEarth = (KM_IN_THE_AIR / EQUATOR_KM).toFixed(1);
+const daysToFlight100 = (Date.parse(FLIGHT_100_ON) - Date.parse(FIRST_PASSENGER_DAY)) / MS_PER_DAY + 1;
+const loadFactorPercent = (LOAD_FACTOR_JAN_TO_OCT_2026 * 100).toFixed(1);
+const estimatedDreamers =
+  Math.round((PASSENGER_FLIGHTS * SEATS_ON_THE_A321NEO * LOAD_FACTOR_JAN_TO_OCT_2026) / DREAMERS_ROUNDED_TO) * DREAMERS_ROUNDED_TO;
+const [shareImageAltText] = POSTCARD_ALT_TEXT.split(SHARE_IMAGE_ALT_ENDS_BEFORE);
+
+const title = "The Dreamer Plane just flew its 100th passenger flight";
+const description = `A fan-made postcard for the Dreamer Plane's 100th passenger flight: ${airports} airports, about ${formatCount(KM_IN_THE_AIR)} km and ~${formatCount(estimatedDreamers)} dreamers in ${daysToFlight100} days. Plane art by Happy Garaje.`;
+
+const shareImage = await getImage({ src: postcard, ...SHARE_IMAGE_SIZE, fit: "cover", position: "top", format: "png" });
+
+const linkClass = "underline underline-offset-4 hover:text-primary transition-colors duration-200";
+const sectionHeadingClass = "text-xl mt-12 mb-4";
+---
+
+<Layout
+  title={title}
+  description={description}
+  shareImage={{ src: shareImage.src, ...SHARE_IMAGE_SIZE }}
+  shareImageAlt={shareImageAltText}
+  ogType="article"
+>
+  <Header nav={siteNav} />
+
+  <main>
+    <article class="mt-40 md:mt-48">
+      <h1 class="text-2xl mb-2">{title}</h1>
+
+      <p class="mb-6 opacity-70 text-sm">
+        <time datetime={PUBLISHED_ON}>{dayMonthAndYear(PUBLISHED_ON)}</time> · by istisiki
+      </p>
+
+      <Image src={postcard} alt={POSTCARD_ALT_TEXT} loading="eager" class="w-full h-auto mb-8" />
+
+      <p class="mb-6">
+        Cebu Pacific's Dreamer Plane flew its {PASSENGER_FLIGHTS}th passenger flight on {dayAndMonth(FLIGHT_100_ON)}:
+        {FLIGHT_100.flightNumber} from {FLIGHT_100.from} to {FLIGHT_100.to}.
+      </p>
+
+      <p class="mb-6">
+        If you haven't met it yet, the Dreamer Plane is the A321neo that wears Cebu Pacific's 30th-anniversary
+        livery, with art by Happy Garaje, an art studio from right here in Cebu. It started carrying passengers on
+        {dayAndMonth(FIRST_PASSENGER_DAY)}, so that's {PASSENGER_FLIGHTS} flights in {daysToFlight100} days. Busy plane!
+      </p>
+
+      <p class="mb-6">I'm a fan, so I made it a postcard.</p>
+
+      <h2 class={sectionHeadingClass}>The first {PASSENGER_FLIGHTS} flights</h2>
+
+      <ul class="mb-6 list-disc pl-6">
+        <li>{PASSENGER_FLIGHTS} passenger flights (the delivery flights don't count)</li>
+        <li>{airports} airports: {AIRPORTS.inThePhilippines} in the Philippines, {AIRPORTS.abroad} abroad</li>
+        <li>about {formatCount(KM_IN_THE_AIR)} km in the air, which is ~{timesAroundTheEarth} times around the Earth</li>
+        <li>~{formatCount(estimatedDreamers)} dreamers flown (that one is an estimate, more on it below)</li>
+      </ul>
+
+      <h2 class={sectionHeadingClass}>Where the numbers come from</h2>
+
+      <p class="mb-6">
+        I built a small tracker that follows this one plane:
+        <a href={TRACKER_URL} class={linkClass}>dreamer.istisiki.me</a>. It shows where the Dreamer is right now, the
+        flight it's on, and every flight it has flown so far. The postcard is drawn from the tracker's own flight list.
+      </p>
+
+      <p class="mb-4">A few things to know, for transparency:</p>
+
+      <ul class="mb-6 list-disc pl-6">
+        <li>
+          The {PASSENGER_FLIGHTS} is the tracker's count. Flight-tracking coverage over the Philippines has holes, so the
+          tracker misses a flight now and then. The real {PASSENGER_FLIGHTS}th could be a flight or two earlier.
+        </li>
+        <li>The kilometres are airport to airport, not the exact path the plane flew.</li>
+        <li>
+          "Dreamers" is a rough estimate, not a headcount. It's {PASSENGER_FLIGHTS} flights x {SEATS_ON_THE_A321NEO} seats x
+          {loadFactorPercent}%, which is Cebu Pacific's average load factor for January to October 2026 (as reported by
+          InsiderPH). Nobody gave me passenger numbers, and if you flew twice, you count twice.
+        </li>
+      </ul>
+
+      <p class="mb-6">
+        The plane has kept flying since I posted this. For today's numbers, make a fresh postcard on the tracker.
+      </p>
+
+      <h2 class={sectionHeadingClass}>Flew on the Dreamer?</h2>
+
+      <p class="mb-8">
+        If you were on one of those flights, you can make a souvenir ticket of it. Open the tracker, tap "Flew on the
+        Dreamer?" at the top, and type in your flight number and date. Then post it!
+      </p>
+
+      <p class="mb-6">
+        <a
+          href={TRACKER_URL}
+          class="inline-block border border-primary text-primary rounded-md px-5 py-2 hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
+        >See where the Dreamer is now</a>
+      </p>
+
+      <h2 class={sectionHeadingClass}>Credits</h2>
+
+      <ul class="mb-6 list-disc pl-6">
+        <li>
+          Plane art by <a href={HAPPY_GARAJE_URL} class={linkClass}>Happy Garaje</a>, Cebu. Theirs is the real artwork. I
+          just follow it around.
+        </li>
+        <li>
+          Flight data: <a href={ADSB_LOL_URL} class={linkClass}>adsb.lol</a>
+          (<a href={ODBL_URL} class={linkClass}>ODbL</a>).
+        </li>
+      </ul>
+
+      <p class="mb-6 opacity-70 text-sm">Fan-made. Not affiliated with Happy Garaje or Cebu Pacific.</p>
+    </article>
+  </main>
+
+  <Footer status="Say hi" email={{ label: DREAMER_EMAIL, url: `mailto:${DREAMER_EMAIL}` }} />
+</Layout>
