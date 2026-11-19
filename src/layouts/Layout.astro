@@ -5,15 +5,15 @@ import type { ComponentProps } from "astro/types";
 
 type PageMetadataProps = ComponentProps<typeof PageMetadata>;
 
-type Props = {
+interface Props {
 	title: string;
 	description: string;
 	shareImage?: PageMetadataProps["image"];
 	shareImageAlt?: PageMetadataProps["imageAlt"];
 	ogType?: PageMetadataProps["ogType"];
-};
+}
 
-const { title, description, shareImage = OGImage, shareImageAlt, ogType = "website" } = Astro.props;
+const { title, description, shareImage = OGImage, shareImageAlt, ogType } = Astro.props;
 ---
 
 <!doctype html>

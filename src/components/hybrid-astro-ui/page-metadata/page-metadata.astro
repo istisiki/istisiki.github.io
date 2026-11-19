@@ -8,7 +8,7 @@ type FontMimeType = 'font/ttf' | 'font/otf' | 'font/woff' | 'font/woff2' | 'appl
 type FaviconRel = 'icon' | 'shortcut icon' | 'apple-touch-icon' | 'apple-touch-icon-precomposed' | 'mask-icon' | 'manifest' | 'apple-touch-startup-image' | 'fluid-icon' | 'preload';
 type FaviconMimeType = 'image/x-icon' | 'image/png' | 'image/svg+xml' | 'image/gif' | 'image/webp' | 'image/jpeg' | 'image/jpg' | 'image/avif';
 
-type Props = {
+interface Props {
   title: string;
   description: string;
   image: Pick<ImageMetadata, 'src' | 'width' | 'height'>;
@@ -16,7 +16,7 @@ type Props = {
   enableClientRouter: boolean;
   preloadFonts?: { href: string; type: FontMimeType }[];
   loadRSS?: boolean;
-  ogType: OgType;
+  ogType?: OgType;
   favicons: {
     rel: FaviconRel;
     type: FaviconMimeType;
@@ -27,7 +27,7 @@ type Props = {
   googleSiteVerification?: string;
   lang: string; 
   alternateLinks?: { href: string; hreflang: string }[]; 
-};
+}
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
@@ -124,6 +124,7 @@ const {
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={new URL(image.src, Astro.site)} />
+{imageAlt && <meta property="twitter:image:alt" content={imageAlt} />}
 
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
 
