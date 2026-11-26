@@ -1,13 +1,19 @@
 ---
 import { PageMetadata } from "@/src/components/hybrid-astro-ui/page-metadata";
 import OGImage from "@/src/assets/background.png"
+import type { ComponentProps } from "astro/types";
+
+type PageMetadataProps = ComponentProps<typeof PageMetadata>;
 
 interface Props {
 	title: string;
 	description: string;
+	shareImage?: PageMetadataProps["image"];
+	shareImageAlt?: PageMetadataProps["imageAlt"];
+	ogType?: PageMetadataProps["ogType"];
 }
 
-const { title, description } = Astro.props as Props;
+const { title, description, shareImage = OGImage, shareImageAlt, ogType } = Astro.props;
 ---
 
 <!doctype html>
@@ -17,9 +23,10 @@ const { title, description } = Astro.props as Props;
 			lang="en"
 			title={title}
 			description={description}
-			image={OGImage}
+			image={shareImage}
+			imageAlt={shareImageAlt}
 			enableClientRouter
-			ogType="website"
+			ogType={ogType}
 			favicons={[  { rel: "icon", type: "image/png", href: "/icon.png", sizes: "32x32" },]}
 		/>
 		{/* Production builds only, so local dev visits don't show up in the stats. */}
